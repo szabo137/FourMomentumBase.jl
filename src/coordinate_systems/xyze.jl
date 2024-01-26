@@ -1,5 +1,5 @@
 struct XYZE <: AbstractCoordinateSystem end
-coordinate_names(::XYZE) = (:px,:py,:pz,:energy)
+coordinate_names(::XYZE) = (:px, :py, :pz, :energy)
 
 function px end
 function py end
@@ -23,11 +23,11 @@ function pt(::XYZE, mom)
     return sqrt(pt2(mom))
 end
 
-function pseudorapidity(::XYZE,mom)
+function pseudorapidity(::XYZE, mom)
     cth = _cos_theta(mom)
-    
+
     if cth^2 < one(cth)
-        return -0.5*log((1-cth)/(1+cth))
+        return -0.5 * log((1 - cth) / (1 + cth))
     end
 
     z = pz(mom)
@@ -39,21 +39,21 @@ function pseudorapidity(::XYZE,mom)
     if z > zero(z)
         return 10e10
     end
-        
+
     return 10e-10
 end
 
-function rapidity(::XYZE,mom)
+function rapidity(::XYZE, mom)
     E = energy(mom)
     z = pz(mom)
     return 0.5 * log((E + z) / (E - z))
 end
 
-function phi(::XYZE,mom) 
+function phi(::XYZE, mom)
     n = zero(getX(mom))
     x = px(mom)
     y = py(mom)
     return x == n && y == n ? n : atan(y, x)
 end
 
-mass(::XYZE,mom) = sqrt(_magnitude(mom))
+mass(::XYZE, mom) = sqrt(_magnitude(mom))

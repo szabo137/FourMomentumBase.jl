@@ -6,104 +6,100 @@ using InteractiveUtils
 
 # ╔═╡ 782da17e-bc42-11ee-3321-87760069d4b1
 begin
-	import Pkg
-	Pkg.activate(@__DIR__())
+    using Pkg: Pkg
+    Pkg.activate(@__DIR__())
 
-	using BenchmarkTools
+    using BenchmarkTools
 
-	Pkg.add("WhereTraits")
-	using WhereTraits
+    Pkg.add("WhereTraits")
+    using WhereTraits
 end
 
 # ╔═╡ bb69f750-360b-44cf-ae28-d93f2d92563e
-
 
 # ╔═╡ 37027b1d-4ed2-40bf-87b2-71cfa0808cd1
 md"## Interface using Branching"
 
 # ╔═╡ 77c23670-49dc-4bc4-a30f-5bd2be4e2f17
 begin
-	function is_fourmomentum_branching end
+    function is_fourmomentum_branching end
 
-	is_fourmomentum_branching(x::T) where T = is_fourmomentum_branching(T)
+    is_fourmomentum_branching(x::T) where {T} = is_fourmomentum_branching(T)
 
-	xyze_branching(::Type{T}) where T = false
-	xyze_branching(x::T) where T = xyze_branching(T)
-	rhothetaphie_branching(::Type{T})  where T = false
-	rhothetaphie_branching(x::T) where T = rhothetaphie_branching(T)
+    xyze_branching(::Type{T}) where {T} = false
+    xyze_branching(x::T) where {T} = xyze_branching(T)
+    rhothetaphie_branching(::Type{T}) where {T} = false
+    rhothetaphie_branching(x::T) where {T} = rhothetaphie_branching(T)
 end
 
 # ╔═╡ 0b17a8fb-f9a7-49e8-a5d8-c005e6a54d31
-
 
 # ╔═╡ 7ba8ba77-3848-4a95-8c6e-18de2dc786fe
 abstract type TestFourMomentum end
 
 # ╔═╡ cb8e8c16-8e08-45b6-b1e8-2a422a943a0f
 begin
-	struct CartMomBranch{T<:Real} <: TestFourMomentum
-		x::T
-		y::T
-		z::T
-		e::T
-	end
+    struct CartMomBranch{T<:Real} <: TestFourMomentum
+        x::T
+        y::T
+        z::T
+        e::T
+    end
 
-	struct SphMomBranch{T<:Real} <: TestFourMomentum
-		rho::T
-		theta::T
-		phi::T
-		e::T
-	end
+    struct SphMomBranch{T<:Real} <: TestFourMomentum
+        rho::T
+        theta::T
+        phi::T
+        e::T
+    end
 
-	is_fourmomentum_branching(::Type{M}) where M<:CartMomBranch = true
-	xyze_branching(::Type{M}) where M<:CartMomBranch = true
+    is_fourmomentum_branching(::Type{M}) where {M<:CartMomBranch} = true
+    xyze_branching(::Type{M}) where {M<:CartMomBranch} = true
 
-	@inline px(p::M) where M<:CartMomBranch = p.x
-	@inline py(p::M) where M<:CartMomBranch = p.y
-	@inline pz(p::M) where M<:CartMomBranch = p.z
-	@inline energy(p::M) where M<:CartMomBranch = p.e
+    @inline px(p::M) where {M<:CartMomBranch} = p.x
+    @inline py(p::M) where {M<:CartMomBranch} = p.y
+    @inline pz(p::M) where {M<:CartMomBranch} = p.z
+    @inline energy(p::M) where {M<:CartMomBranch} = p.e
 
-	
-	is_fourmomentum_branching(::Type{M}) where M<:SphMomBranch = true
-	rhothetaphie_branching(::Type{M}) where M<:SphMomBranch = true
+    is_fourmomentum_branching(::Type{M}) where {M<:SphMomBranch} = true
+    rhothetaphie_branching(::Type{M}) where {M<:SphMomBranch} = true
 
-	@inline rho(p::M) where M<:SphMomBranch = p.rho
-	@inline theta(p::M) where M<:SphMomBranch = p.theta
-	@inline phi(p::M) where M<:SphMomBranch = p.phi
-	@inline energy(p::M) where M<:SphMomBranch = p.e
-	
+    @inline rho(p::M) where {M<:SphMomBranch} = p.rho
+    @inline theta(p::M) where {M<:SphMomBranch} = p.theta
+    @inline phi(p::M) where {M<:SphMomBranch} = p.phi
+    @inline energy(p::M) where {M<:SphMomBranch} = p.e
 end
 
 # ╔═╡ 0f7f0b39-7ee2-428d-99bf-875869806e2c
 @inline function _pt_cart(mom)
-	x = px(mom)
-	y = py(mom)
-	return sqrt(x^2 + y^2)
+    x = px(mom)
+    y = py(mom)
+    return sqrt(x^2 + y^2)
 end
 
 # ╔═╡ 41db86da-39d1-4cd0-b192-188f28556cc1
 @inline function _pt_sph(mom)
-	r = rho(mom)
-	t = theta(mom)
-	return r*sin(t)
+    r = rho(mom)
+    t = theta(mom)
+    return r * sin(t)
 end
 
 # ╔═╡ 12f23e57-f29b-4a00-95c6-c426d9d54e84
 function _pt_branching(mom)
-	if xyze_branching(mom)
-		return _pt_cart(mom)
-	end
-	if rhothetaphie_branching(mom)
-		return _pt_sph(mom)
-	end
+    if xyze_branching(mom)
+        return _pt_cart(mom)
+    end
+    if rhothetaphie_branching(mom)
+        return _pt_sph(mom)
+    end
 
-	raise(ArgumentError(
-		"Objects of type <$(typeof(mom)) are not recognized as four-momenta."
-	))
+    return raise(
+        ArgumentError("Objects of type <$(typeof(mom)) are not recognized as four-momenta.")
+    )
 end
 
 # ╔═╡ 349408d0-71d5-4684-b07c-12baa317bee1
-cmomb = CartMomBranch(1.0,2.0,4.0,5.0)
+cmomb = CartMomBranch(1.0, 2.0, 4.0, 5.0)
 
 # ╔═╡ ed4dfd96-e1fe-45bb-b2e5-f661e201919f
 xyze_branching(cmomb)
@@ -128,9 +124,8 @@ rhothetaphie_branching(cmomb)
 
 # ╔═╡ 28d52368-383f-41f8-9097-4d2481e240c9
 
-
 # ╔═╡ bad434a7-2f02-4df6-ade2-0498faf3eb3d
-smomb = SphMomBranch(3.0,0.5,0.2,4.0)
+smomb = SphMomBranch(3.0, 0.5, 0.2, 4.0)
 
 # ╔═╡ 1dd0db93-f864-43f4-b79d-e1bc9a50d610
 rhothetaphie_branching(smomb)
@@ -155,37 +150,35 @@ md"# Interface using dispatch"
 
 # ╔═╡ 7f62e9c8-45aa-4aa9-aad6-a5f1bce04c52
 begin
-	abstract type CS end
+    abstract type CS end
 
-	struct XYZE <: CS end
+    struct XYZE <: CS end
 
-	struct RHO_THETA_PHI_E <: CS end
+    struct RHO_THETA_PHI_E <: CS end
 
-	function coord_sys end
+    function coord_sys end
 
-	function pt_traits end
-	
+    function pt_traits end
 end
 
 # ╔═╡ 3768d801-7214-458c-a2da-fa886de0aaf7
 
-
 # ╔═╡ eb118d88-3602-421c-9265-e86048e431bb
 begin
-	@inline coord_sys(::T) where T<:CartMomBranch = XYZE()
-	@inline coord_sys(::T) where T<:SphMomBranch = RHO_THETA_PHI_E()
+    @inline coord_sys(::T) where {T<:CartMomBranch} = XYZE()
+    @inline coord_sys(::T) where {T<:SphMomBranch} = RHO_THETA_PHI_E()
 end
 
 # ╔═╡ 8f66b5d9-14ad-445d-9705-ffd4631a8f00
 begin
-	pt_traits(mom) = pt_traits(coord_sys(mom),mom) # dispatch on a given coordsystem
-	
-	pt_traits(::XYZE, mom) =  sqrt(px(mom)^2 + py(mom)^2)
-	pt_traits(::RHO_THETA_PHI_E, mom) = rho(mom)*sin(theta(mom))
+    pt_traits(mom) = pt_traits(coord_sys(mom), mom) # dispatch on a given coordsystem
+
+    pt_traits(::XYZE, mom) = sqrt(px(mom)^2 + py(mom)^2)
+    pt_traits(::RHO_THETA_PHI_E, mom) = rho(mom) * sin(theta(mom))
 end
 
 # ╔═╡ e16b772c-344c-41b0-b898-749b8cd5c004
-cmomt = CartMomBranch(2,3,4,5)
+cmomt = CartMomBranch(2, 3, 4, 5)
 
 # ╔═╡ f56f99a2-3c79-4fe6-9cc3-218934731759
 @benchmark pt_traits($cmomt)

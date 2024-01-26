@@ -17,8 +17,8 @@ eta(mom::CustomMom) = mom.eta
 phi(mom::CustomMom) = mom.phi
 mass(mom::CustomMom) = mom.m
 
-_pt,_eta,_phi,_m = rand(RNG,4)
-mom_offshell = CustomMom(_pt,_eta,_phi,_m)    
+_pt, _eta, _phi, _m = rand(RNG, 4)
+mom_offshell = CustomMom(_pt, _eta, _phi, _m)
 mom_zero = CustomMom(0.0, 0.0, 0.0, 0.0)
 
 @testset "momentum components" begin
@@ -31,6 +31,4 @@ mom_zero = CustomMom(0.0, 0.0, 0.0, 0.0)
     @test eta(mom_zero) == 0.0
     @test phi(mom_zero) == 0.0
     @test mass(mom_zero) == 0.0
-
 end
-

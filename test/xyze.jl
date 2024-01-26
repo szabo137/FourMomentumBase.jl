@@ -8,7 +8,7 @@ const RNG = MersenneTwister(137137)
 struct CustomMom
     x
     y
-    z 
+    z
     e
 end
 
@@ -35,6 +35,4 @@ mom_offshell = CustomMom(m, 0.0, 0.0, 0.0)
     @test px(mom_zero) == 0.0
     @test py(mom_zero) == 0.0
     @test pz(mom_zero) == 0.0
-
 end
-

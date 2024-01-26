@@ -1,7 +1,7 @@
 module FourMomentumBase
 
 export coordinate_system, coordinate_names
-export pseudorapidity,eta, rapidity, phi, energy, mass, px, py, pz 
+export pseudorapidity, eta, rapidity, phi, energy, mass, px, py, pz
 
 include("interface.jl")
 include("coordinate_systems/xyze.jl")
