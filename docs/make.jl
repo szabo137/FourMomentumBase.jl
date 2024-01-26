@@ -1,7 +1,9 @@
 using FourMomentumBase
 using Documenter
 
-DocMeta.setdocmeta!(FourMomentumBase, :DocTestSetup, :(using FourMomentumBase); recursive=true)
+DocMeta.setdocmeta!(
+    FourMomentumBase, :DocTestSetup, :(using FourMomentumBase); recursive=true
+)
 
 makedocs(;
     modules=[FourMomentumBase],
@@ -12,12 +14,7 @@ makedocs(;
         edit_link="main",
         assets=String[],
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
+    pages=["Home" => "index.md"],
 )
 
-deploydocs(;
-    repo="github.com/szabo137/FourMomentumBase.jl",
-    devbranch="main",
-)
+deploydocs(; repo="github.com/szabo137/FourMomentumBase.jl", devbranch="main")
