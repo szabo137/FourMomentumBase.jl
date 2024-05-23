@@ -67,7 +67,7 @@ Return the square of the magnitude of a given four-momentum, i.e. the sum of the
     This function differs from a similar function for the `TLorentzVector` used in the famous `ROOT` library.
 
 """
-@inline function magnitude2(::EXYZ, mom) 
+@inline function magnitude2(::EXYZ, mom)
     return px(mom)^2 + py(mom)^2 + pz(mom)^2
 end
 
@@ -103,7 +103,7 @@ Return the squared invariant mass of a given four-momentum, i.e. the minkowski d
 
 
 """
-@inline function invariant_mass2(::EXYZ,mom) 
+@inline function invariant_mass2(::EXYZ, mom)
     return energy(mom)^2 - px(mom)^2 - py(mom)^2 - pz(mom)^2
 end
 
@@ -123,7 +123,7 @@ Return the the invariant mass of a given four-momentum, i.e. the square root of 
     If the squared invariant mass `m2` is negative, `-sqrt(-m2)` is returned. 
 
 """
-@inline function invariant_mass(cs::EXYZ,mom) 
+@inline function invariant_mass(cs::EXYZ, mom)
     m2 = invariant_mass2(mom)
     if m2 < zero(m2)
         # Think about including this waring, maybe optional with a global PRINT_WARINGS switch.
@@ -145,17 +145,17 @@ Return magnitude of the beta vector for a given four-momentum, i.e. the magnitud
     If `(E,px,py,pz)` is a four-momentum, this is equivalent to `sqrt(px^2 + py^2 + pz^2)/E`.
 
 """
-@inline function boost_beta(::EXYZ,mom)
+@inline function boost_beta(::EXYZ, mom)
     en = energy(mom)
     rho = magnitude(mom)
-    if !iszero(en) 
+    if !iszero(en)
         rho / en
-    elseif iszero(rho) 
+    elseif iszero(rho)
         return zero(rho)
     else
         throw(
             ArgumentError(
-                "There is no beta for a four-momentum with vanishing time/energy component",
+                "There is no beta for a four-momentum with vanishing time/energy component"
             ),
         )
     end
@@ -172,7 +172,7 @@ Return the relativistic gamma factor for a given four-momentum, i.e. the inverse
     If `(E,px,py,pz)` is a four-momentum with beta vector `β`, this is equivalent to `1/sqrt(1- β^2)`.
 
 """
-@inline function boost_gamma(::EXYZ,mom) 
+@inline function boost_gamma(::EXYZ, mom)
     return inv(sqrt(one(energy(mom)) - boost_beta(mom)^2))
 end
 
@@ -194,7 +194,7 @@ Return the squared transverse momentum for a given four-momentum, i.e. the sum o
     The transverse components are defined w.r.t. to the 3-axis. 
 
 """
-@inline function transverse_momentum2(::EXYZ, mom ) 
+@inline function transverse_momentum2(::EXYZ, mom)
     return px(mom)^2 + py(mom)^2
 end
 
@@ -214,7 +214,7 @@ Return the transverse momentum for a given four-momentum, i.e. the magnitude of 
     The transverse components are defined w.r.t. to the 3-axis. 
 
 """
-@inline function transverse_momentum(::EXYZ,mom)
+@inline function transverse_momentum(::EXYZ, mom)
     return sqrt(transverse_momentum2(mom))
 end
 
@@ -259,7 +259,7 @@ Return the transverse momentum for a given four-momentum, i.e. the square root o
     If the squared transverse mass `mt2` is negative, `-sqrt(-mt2)` is returned.
 
 """
-function transverse_mass(::EXYZ, mom) 
+function transverse_mass(::EXYZ, mom)
     mT2 = transverse_mass2(mom)
     if mT2 < zero(mT2)
         # add optional waring: negative transverse mass -> -sqrt(-mT2) is returned.
@@ -285,7 +285,7 @@ Return the [rapidity](https://en.wikipedia.org/wiki/Rapidity) for a given four-m
     The transverse components are defined w.r.t. to the 3-axis. 
 
 """
-@inline function rapidity(::EXYZ,mom) 
+@inline function rapidity(::EXYZ, mom)
     en = energy(mom)
     zcomp = pz(mom)
     return 0.5 * log((en + zcomp) / (en - zcomp))
@@ -334,13 +334,12 @@ Return the theta angle for a given four-momentum, i.e. the polar angle of its sp
     The [spherical coordinates](https://en.wikipedia.org/wiki/Spherical_coordinate_system) are defined w.r.t. to the 3-axis. 
 
 """
-@inline function polar_angle(::EXYZ, mom) 
-    
+@inline function polar_angle(::EXYZ, mom)
     xcomp = px(mom)
     ycomp = py(mom)
     zcomp = pz(mom)
 
-    return if iszero(xcomp) && iszero(ycomp) && iszero(zcomp) 
+    return if iszero(xcomp) && iszero(ycomp) && iszero(zcomp)
         zero(xcomp)
     else
         atan(transverse_momentum(mom), zcomp)
@@ -358,7 +357,7 @@ Return the cosine of the theta angle for a given four-momentum.
     This is an equivalent but faster version of `cos(polar_angle(::EXYZ, mom))`; see [`polar_angle`](@ref).
 
 """
-@inline function cos_theta(::EXYZ,mom) 
+@inline function cos_theta(::EXYZ, mom)
     r = magnitude(mom)
     return iszero(r) ? one(px(mom)) : pz(mom) / r
 end
@@ -395,9 +394,9 @@ Return the cosine of the azimuthal angle for a given four-momentum.
     This is an equivalent but faster version of `cos(azimuthal_angle(mom))`; see [`azimuthal_angle`](@ref).
 
 """
-function cos_phi(::EXYZ, mom) 
+function cos_phi(::EXYZ, mom)
     pT = transverse_momentum(mom)
-    return iszero(pT) ? one(pT) : px(mom) / pT 
+    return iszero(pT) ? one(pT) : px(mom) / pT
 end
 
 """
@@ -411,9 +410,9 @@ Return the sine of the azimuthal angle for a given four-momentum.
     This is an equivalent but faster version of `sin(azimuthal_angle(mom))`; see [`azimuthal_angle`](@ref).
 
 """
-function sin_phi(::EXYZ, mom) 
+function sin_phi(::EXYZ, mom)
     pT = transverse_momentum(mom)
-    return iszero(pT) ? zero(pT) : py(mom) / pT 
+    return iszero(pT) ? zero(pT) : py(mom) / pT
 end
 
 ########################
@@ -464,5 +463,3 @@ Return the minus component for a given four-momentum in [light-cone coordinates]
 @inline function minus_component(::EXYZ, mom)
     return 0.5 * (energy(mom) - pz(mom))
 end
-
-

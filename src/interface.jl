@@ -14,7 +14,6 @@ function coordinate_names end
 """
 function coordinate_system end
 
-
 const FOURMOMENTUM_GETTER_FUNCTIONS = (
     :energy,
     :px,
@@ -38,15 +37,16 @@ const FOURMOMENTUM_GETTER_FUNCTIONS = (
     :cos_phi,
     :sin_phi,
     :plus_component,
-    :minus_component
+    :minus_component,
 )
 
 for func in FOURMOMENTUM_GETTER_FUNCTIONS
-    eval(quote
-        ($func)(mom) = ($func)($coordinate_system(mom),mom)
-    end)
+    eval(
+        quote
+            ($func)(mom) = ($func)($coordinate_system(mom), mom)
+        end,
+    )
 end
-
 
 const FOURMOMENTUM_GETTER_ALIASSES = Dict(
     :mag2 => :magnitude2,
@@ -61,10 +61,10 @@ const FOURMOMENTUM_GETTER_ALIASSES = Dict(
     :mt => :transverse_mass,
 )
 
-for (alias,func) in FOURMOMENTUM_GETTER_ALIASSES
-    eval(quote
-        ($alias)(mom) = ($func)(mom)
-    end)
+for (alias, func) in FOURMOMENTUM_GETTER_ALIASSES
+    eval(
+        quote
+            ($alias)(mom) = ($func)(mom)
+        end,
+    )
 end
-
-
